@@ -56,6 +56,20 @@ app.post('/todos', function(req, res){
     
 });
 
+app.delete('/todos/:id', function(req, res){
+    var todoId = parseInt(req.params.id, 10);
+    var matchedTodo = _.findWhere(todos, {id: todoId});
+    
+    if (matchedTodo) {
+        todos = _.without(todos, matchedTodo);
+        //res.json(newtodos);
+        res.json(matchedTodo);
+        res.status(200).send();
+    } else {
+        res.status(404).json({"error":"ID not found. No item will be deleted."});
+    }
+})
+
 //Not reserved
 app.listen(PORT, process.env.IP, function(){
   console.log("Express server started on port " + PORT + '!');
