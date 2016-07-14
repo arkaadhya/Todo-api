@@ -70,6 +70,39 @@ app.delete('/todos/:id', function(req, res){
     }
 })
 
+app.put('/todos/:id', function(req, res){
+    var todoId = parseInt(req.params.id, 10);
+    var matchedTodo = _.findWhere(todos, {id: todoId});
+    var body = _.pick(req.body, 'description', 'completed');
+    var validAttributes = {};
+    
+    //Return skips all the code after that
+    if (!matchedTodo) {
+        return res.status(404).send();
+    }
+    
+    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+        validAttributes.completed = body.completed;
+    } else if (body.hasOwnProperty('completed')) {
+        return res.status(404).send();
+    } 
+    
+    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+        validAttributes.description = body.description;
+    } else if (body.hasOwnProperty('description')) {
+        return res.status(404).send();
+    } 
+    
+    //Object is passed as a reference and not as a value
+    _.extend(matchedTodo, validAttributes);
+    
+    //Automatically sends back a 200 status code
+    res.json(matchedTodo);
+    
+});
+
+
+
 //Not reserved
 app.listen(PORT, process.env.IP, function(){
   console.log("Express server started on port " + PORT + '!');
